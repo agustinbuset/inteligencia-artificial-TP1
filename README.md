@@ -53,6 +53,24 @@ nombres = pd.read_csv(carpeta + 'atributos_finales.csv')['atributo']
 print(pd.DataFrame(X_train[:5].toarray(), columns=nombres))
 ```
 
+## Modelos supervisados (punto 4)
+
+Se utilizan **regresión logística, árbol de decisión y Random Forest**.
+Cada modelo compara variantes sin pesos y con pesos balanceados. La selección
+usa F1 macro de validación; después se realiza la evaluación final en prueba.
+
+| Documentación | Resultados locales |
+| --- | --- |
+| [Regresión logística](docs/regresion_logistica.md) | `outputs/modelos/regresion_logistica/` |
+| [Árbol de decisión](docs/arbol_decision.md) | `outputs/modelos/arbol_decision/` |
+| [Random Forest](docs/random_forest.md) | `outputs/modelos/random_forest/` |
+| [Comparación y protocolo](docs/comparacion_modelos.md) | `outputs/comparacion_modelos/` |
+
+El ganador por F1 macro de validación fue el **árbol de decisión sin pesos**.
+En prueba obtuvo **79,34 % de accuracy y 0,4942 de F1 macro**, frente a 0,4515
+del bosque y 0,4120 de la regresión logística. Ningún seleccionado reconoció
+la severidad 1: ver las métricas por clase y limitaciones en la comparación.
+
 ## Organización
 
 ```text
@@ -70,8 +88,14 @@ scripts/
   resumir_resultados.py         Genera el informe y documenta los parámetros
   verificar_resultados.py       Comprueba los datos reales preparados
   verificar_flujo.py            Prueba pequeña con datos sintéticos
+  entrenar_regresion_logistica.py  Primer modelo y variantes de pesos
+  entrenar_arboles.py           Árbol de decisión y Random Forest
+  evaluacion_modelos.py         Métricas comunes de clasificación
+  comparar_modelos.py           Selección y evaluación final de los tres modelos
+  verificar_modelos.py          Prueba del entrenamiento y comparación con datos sintéticos
   rutas.py                     Ubicaciones del proyecto
 docs/                          Consigna y descripción del dataset
+outputs/                       Modelos y comparación (artefactos locales, fuera de Git)
 preparar_datos.py               Acceso principal y compatibilidad con modelos anteriores
 requirements.txt               Dependencias de Python
 ```
