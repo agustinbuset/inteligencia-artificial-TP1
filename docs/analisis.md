@@ -8,9 +8,9 @@
 
 ## Fuentes y alcance
 
-- Consigna: [consigna - TP 1 - MachineLearning.pdf](consigna - TP 1 - MachineLearning.pdf).
-- Descripción del dataset: [Dataset_no_me_choques.ipynb](Dataset_no_me_choques.ipynb).
-- Versión HTML: [Dataset_Accidente.html](Dataset_Accidente.html).
+- Consigna: [consigna - TP 1 - MachineLearning.pdf](<../consigna/consigna - TP 1 - MachineLearning.pdf>).
+- Descripción del dataset: [Dataset_no_me_choques.ipynb](../consigna/Dataset_no_me_choques.ipynb).
+- Versión HTML: [Dataset_Accidente.html](../consigna/Dataset_Accidente.html).
 
 El notebook y el HTML contienen la misma descripción del dataset **Accidente** y su diccionario de variables. Informan **2.974.335 eventos y 49 atributos**. Cada fila representa un accidente vial.
 

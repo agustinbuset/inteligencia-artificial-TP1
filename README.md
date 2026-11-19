@@ -1,181 +1,70 @@
-# Trabajo práctico: preparación del dataset Accidente
+# TP1 – Machine Learning: Accidente
 
-Se prepararon **2.974.335 registros**, conservando intacto `datasets/Accidente.csv`.
-Los resultados están en `datasets/preparados/accidente/`.
+**UADE – 3.4.096 Inteligencia Artificial**
+Docente: Parkinson, Christian
 
-## ¿Dónde está el dataset limpio?
+## Integrantes
 
-**[Accidente_limpio.csv](datasets/Accidente_limpio_v1.csv)** es la
-tabla limpia más fácil de consultar. CSV significa *Comma-Separated Values*:
-valores separados por comas.
+- Buset, Agustín
+- Castro, Martina Morena
+- Gantus, Elías
+- Toffoletto, Martina Ornella
 
-Contiene los faltantes tratados, los extremos recortados según las reglas
-aprendidas y las variables temporales derivadas. Los números conservan sus
-unidades y las categorías conservan sus nombres: esta tabla no está escalada.
+## El problema
 
-Incluye `Severity` como objetivo y tres columnas de identificación:
-`fila_origen`, `ID` (identificador) y `conjunto`. **Estas tres columnas no se usan como predictores.**
-`conjunto` indica `train` (entrenamiento), `validation` (validación) o `test` (prueba).
-La tabla reúne las particiones en ese orden; `fila_origen` indica la posición
-que tenía cada accidente en el original.
+Dataset asignado: **Accidente** (2.974.335 accidentes viales, 49 atributos). Es un problema de **clasificación supervisada multiclase**: predecir la severidad del accidente (`Severity`, clases 1 a 4, donde 1 es la más leve). Hay que identificar el problema y las variables, preprocesar los datos, aplicar al menos tres modelos de Machine Learning (con técnica de selección de datos, evaluación y ventajas/limitaciones) y presentar los resultados (ver `consigna/`).
 
-Para consultar algunas filas sin cargar toda la tabla:
+## Requisitos
 
-```python
-import pandas as pd
+- Python 3.9 o superior (probado con 3.14).
+- Dependencias: `pip install -r requirements.txt` (pandas, numpy, scipy, scikit-learn, matplotlib, joblib). Se recomienda un entorno virtual (`python3 -m venv .venv`).
+- El dataset original no está en el repositorio por su tamaño (1,1 GB). Viene de la cátedra en `Accidente.7z`: descomprimirlo y dejar el archivo como `datasets/Accidente.csv`.
 
-datos = pd.read_csv('datasets/Accidente_limpio_v1.csv', nrows=10)
-print(datos.head())
+## Cómo correrlo
+
+Desde la carpeta del proyecto (el procesamiento completo tarda varios minutos y carga el CSV en memoria):
+
+```bash
+# 1. Preprocesamiento (punto 3): limpia, transforma y separa 70/15/15
+python -m scripts.preparar_datos --input datasets/Accidente.csv --comparison-max-rows 20000 --folds 5
+
+# 2. Modelos (punto 4)
+python -m scripts.entrenar_regresion_logistica
+python -m scripts.entrenar_arboles
+python -m scripts.comparar_modelos
 ```
 
-La versión **lista para entrenar**, con escalado y categorías convertidas a
-números, está en archivos separados:
+Los datos preparados se guardan en `datasets/preparados/accidente/` y los modelos y la comparación en `outputs/`. Para probar rápido con una muestra se puede agregar `--max-rows 20000` al paso 1. Para reanudar una preparación interrumpida, repetir el mismo comando con `--resume`.
+
+## Estructura del proyecto
 
 | Archivo | Contenido |
-| --- | --- |
-| `X_train.npz` / `y_train.csv` | Atributos / severidad de entrenamiento: 2.082.034 filas |
-| `X_validation.npz` / `y_validation.csv` | Atributos / severidad de validación: 446.150 filas |
-| `X_test.npz` / `y_test.csv` | Atributos / severidad de prueba: 446.151 filas |
-| `atributos_finales.csv` | Nombres y orden de las 172 columnas preparadas |
-| `dataset_original_copia.csv` | Copia exacta del original; no es la tabla limpia |
-| `*_raw.csv` | Particiones anteriores a la limpieza y las transformaciones |
+|---|---|
+| `scripts/preparar_datos.py` | Limpieza, transformaciones, selección y partición de datos |
+| `scripts/entrenar_regresion_logistica.py` | Regresión logística y variantes de pesos |
+| `scripts/entrenar_arboles.py` | Árbol de decisión y Random Forest |
+| `scripts/comparar_modelos.py`, `evaluacion_modelos.py` | Selección y evaluación final de los tres modelos |
+| `scripts/exportar_dataset_limpio.py`, `resumir_resultados.py` | Tabla limpia en CSV e informe de preparación |
+| `scripts/verificar_*.py` | Comprobaciones de los datos y de los flujos |
+| `preparar_datos.py` | Acceso de compatibilidad con los modelos guardados |
+| `docs/` | Análisis, reporte de preprocesamiento y documentación de cada modelo |
+| `consigna/` | Enunciado y descripción del dataset |
 
-Los archivos `.npz` guardan matrices comprimidas. Para leerlos:
+## Resumen de la solución
 
-```python
-from scipy.sparse import load_npz
-import pandas as pd
+| Tarea | Resolución | Dónde |
+|---|---|---|
+| 1. Tipo de problema | Clasificación supervisada multiclase (ordinal) de `Severity` | `docs/analisis.md` |
+| 2. Variables | 49 variables: identificadores, objetivo, ubicación, tiempo, clima y elementos de la vía | `docs/analisis.md` |
+| 3. Preprocesamiento | Faltantes (mediana / `Desconocido`), extremos por IQR, variables temporales, codificación, binarización, estandarización, PCA y L1/L2 comparados | `docs/reporte_preprocesamiento_punto_3.md` |
+| 4. Modelos | Regresión logística, árbol de decisión y Random Forest | `docs/regresion_logistica.md`, `arbol_decision.md`, `random_forest.md` |
+| 4a. Selección de datos | Partición 70 % entrenamiento, 15 % validación y 15 % prueba; validación cruzada de 5 partes; los parámetros se aprenden solo con entrenamiento | `docs/reporte_preprocesamiento_punto_3.md` |
+| 4b. Evaluación | Selección por F1 macro en validación y evaluación final en prueba, con métricas por clase | `docs/comparacion_modelos.md` |
+| 4c. Ventajas y limitaciones | Por modelo y en la comparación | `docs/` |
+| 5. Resultados | Comparación final y conclusiones | `docs/comparacion_modelos.md` |
 
-carpeta = 'datasets/preparados/accidente/'
-X_train = load_npz(carpeta + 'X_train.npz')
-y_train = pd.read_csv(carpeta + 'y_train.csv')['Severity']
-nombres = pd.read_csv(carpeta + 'atributos_finales.csv')['atributo']
-print(pd.DataFrame(X_train[:5].toarray(), columns=nombres))
-```
+## Resultados
 
-## Modelos supervisados (punto 4)
+Datos preparados: 2.082.034 filas de entrenamiento, 446.150 de validación y 446.151 de prueba, con 172 atributos.
 
-Se utilizan **regresión logística, árbol de decisión y Random Forest**.
-Cada modelo compara variantes sin pesos y con pesos balanceados. La selección
-usa F1 macro de validación; después se realiza la evaluación final en prueba.
-
-| Documentación | Resultados locales |
-| --- | --- |
-| [Regresión logística](docs/regresion_logistica.md) | `outputs/modelos/regresion_logistica/` |
-| [Árbol de decisión](docs/arbol_decision.md) | `outputs/modelos/arbol_decision/` |
-| [Random Forest](docs/random_forest.md) | `outputs/modelos/random_forest/` |
-| [Comparación y protocolo](docs/comparacion_modelos.md) | `outputs/comparacion_modelos/` |
-
-El ganador por F1 macro de validación fue el **árbol de decisión sin pesos**.
-En prueba obtuvo **79,34 % de accuracy y 0,4942 de F1 macro**, frente a 0,4515
-del bosque y 0,4120 de la regresión logística. Ningún seleccionado reconoció
-la severidad 1: ver las métricas por clase y limitaciones en la comparación.
-
-## Organización
-
-```text
-datasets/
-  Accidente.csv                 Original sin modificar
-  preparados/
-    accidente/
-      Accidente_limpio.csv      Tabla limpia en unidades comprensibles
-      X_*.npz, y_*.csv          Datos preparados para entrenar y evaluar
-      resumen.md                Informe con decisiones y resultados
-      ...                       Modelos, gráficos y comprobaciones
-scripts/
-  preparar_datos.py             Limpieza, transformaciones y comparación
-  exportar_dataset_limpio.py    Genera la tabla limpia sin volver a entrenar
-  resumir_resultados.py         Genera el informe y documenta los parámetros
-  verificar_resultados.py       Comprueba los datos reales preparados
-  verificar_flujo.py            Prueba pequeña con datos sintéticos
-  entrenar_regresion_logistica.py  Primer modelo y variantes de pesos
-  entrenar_arboles.py           Árbol de decisión y Random Forest
-  evaluacion_modelos.py         Métricas comunes de clasificación
-  comparar_modelos.py           Selección y evaluación final de los tres modelos
-  verificar_modelos.py          Prueba del entrenamiento y comparación con datos sintéticos
-  rutas.py                     Ubicaciones del proyecto
-docs/                          Consigna y descripción del dataset
-outputs/                       Modelos y comparación (artefactos locales, fuera de Git)
-preparar_datos.py               Acceso principal y compatibilidad con modelos anteriores
-requirements.txt               Dependencias de Python
-```
-
-## Ejecutar en PyCharm
-
-Seleccionar `.venv/Scripts/python.exe` como intérprete. Ejecutar los comandos
-desde la raíz del proyecto, donde está este archivo:
-
-```powershell
-python -m pip install -r requirements.txt
-```
-
-Los datos actuales ya están preparados. Para volver a ejecutar todo, elegir
-otra carpeta de salida y evitar reemplazar los resultados actuales:
-
-```powershell
-python -m scripts.preparar_datos --input datasets/Accidente.csv --output datasets/preparados/nueva_ejecucion --comparison-max-rows 20000 --folds 5
-python -m scripts.exportar_dataset_limpio --output datasets/preparados/nueva_ejecucion
-```
-
-La comparación utiliza una muestra estratificada de 20.000 registros de
-entrenamiento; el ajuste final usa todo entrenamiento. Las particiones finales
-conservan todos los registros válidos. El procesamiento completo carga el archivo
-en memoria y puede tardar varios minutos. Para probar con una muestra global se
-puede agregar `--max-rows 20000`; esa opción sí reduce las particiones finales.
-
-Para reanudar una preparación interrumpida, repetir exactamente su comando con
-`--resume`. Las rutas predeterminadas apuntan a `datasets/preparados/accidente/`.
-En una configuración de PyCharm se puede usar el nombre de módulo
-`scripts.preparar_datos` o el acceso principal `preparar_datos.py` de la raíz.
-
-## Proceso, explicado brevemente
-
-1. **Explorar y limpiar:** el EDA (*Exploratory Data Analysis*, análisis exploratorio
-   de datos) revisa faltantes, distribuciones y extremos. Los números faltantes se
-   completan con la mediana y las categorías con `Desconocido`.
-2. **Tratar extremos:** se usan límites IQR (*Interquartile Range*, rango
-   intercuartílico). Cuando el rango es cero no se recorta esa variable. Un valor
-   extremo estadístico no es necesariamente un error de registro.
-3. **Transformar:** se comparan estandarización, escalado MinMax, normalización,
-   codificación de categorías y discretización. Son alternativas para comparar.
-4. **Seleccionar o reducir:** se eliminan identificadores como entradas y columnas
-   constantes. Se prueba PCA (*Principal Component Analysis*, análisis de
-   componentes principales) sobre los números y regularización L1 y L2, que
-   penalizan los coeficientes del modelo. L1 puede anular algunos coeficientes.
-5. **Separar y evaluar:** 70 % entrenamiento, 15 % validación y 15 % prueba.
-   La validación cruzada usa cinco partes de la muestra de entrenamiento.
-
-Los parámetros se aprenden solamente en entrenamiento; dentro de la validación
-cruzada se vuelven a aprender en cada parte de entrenamiento. Así se evita que
-la información reservada para evaluar influya en las transformaciones.
-
-La alternativa final fue estandarización. L1 no convergió y quedó como comparación
-exploratoria. El clasificador de referencia tiene dificultades con las clases
-minoritarias. Ver los resultados por clase y las limitaciones en el
-[informe completo](datasets/preparados/accidente/resumen.md).
-
-## Comprobaciones e informe
-
-```powershell
-python -m scripts.verificar_flujo
-python -m scripts.verificar_resultados
-python -m scripts.resumir_resultados --advertencia-l1-cv
-```
-
-La primera comprobación usa datos sintéticos temporales. La segunda comprueba
-el original y su copia, que las particiones sean disjuntas y que matrices y
-etiquetas coincidan. La huella digital SHA-256 (*Secure Hash Algorithm de 256 bits*,
-algoritmo de hash seguro de 256 bits) permite detectar cambios en los archivos.
-
-Para generar únicamente la tabla limpia, sin reentrenar, ejecutar
-`python -m scripts.exportar_dataset_limpio`; se rechaza reemplazar una tabla ya existente.
-
-Para reutilizar el modelo con nuevos accidentes:
-
-```python
-import joblib
-from scripts.preparar_datos import features
-
-modelo = joblib.load('datasets/preparados/accidente/pipeline.joblib')
-# predicciones = modelo.predict(features(nuevos_accidentes))
-```
+El ganador por F1 macro de validación fue el **árbol de decisión sin pesos**. En prueba obtuvo **79,34 % de accuracy y 0,4942 de F1 macro**, frente a 0,4515 del Random Forest y 0,4120 de la regresión logística. Ningún modelo seleccionado reconoció la severidad 1: las métricas por clase y las limitaciones están en `docs/comparacion_modelos.md`.

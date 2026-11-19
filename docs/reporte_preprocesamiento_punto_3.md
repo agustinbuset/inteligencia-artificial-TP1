@@ -9,7 +9,7 @@ No se volvieron a entrenar modelos para escribir este reporte.
 
 ## 1. Qué pide la consigna y cuál es el alcance de esta guía
 
-El punto 3 de la [consigna](<consigna - TP 1 - MachineLearning.pdf>) solicita
+El punto 3 de la [consigna](<../consigna/consigna - TP 1 - MachineLearning.pdf>) solicita
 realizar preprocesamiento cuando sea necesario y menciona limpieza,
 normalización, categorización, remuestreo y binarización, entre otras posibilidades.
 La expresión «en caso de que fuese necesario» permite fundamentar cuáles son
