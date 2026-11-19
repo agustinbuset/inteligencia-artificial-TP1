@@ -49,6 +49,7 @@ Los datos preparados se guardan en `datasets/preparados/accidente/` y los modelo
 | `scripts/exportar_dataset_limpio.py`, `resumir_resultados.py` | Tabla limpia en CSV e informe de preparación |
 | `scripts/verificar_*.py` | Comprobaciones de los datos y de los flujos |
 | `preparar_datos.py` | Acceso de compatibilidad con los modelos guardados |
+| `docs/TP1 - Clasificación de severidad de accidentes.pdf` | **Informe** del TP (también en `.docx`) |
 | `docs/` | Análisis, reporte de preprocesamiento y documentación de cada modelo |
 | `consigna/` | Enunciado y descripción del dataset |
 
@@ -63,7 +64,7 @@ Los datos preparados se guardan en `datasets/preparados/accidente/` y los modelo
 | 4a. Selección de datos | Partición 70 % entrenamiento, 15 % validación y 15 % prueba; validación cruzada de 5 partes; los parámetros se aprenden solo con entrenamiento | `docs/reporte_preprocesamiento_punto_3.md` |
 | 4b. Evaluación | Selección por F1 macro en validación y evaluación final en prueba, con métricas por clase | `docs/comparacion_modelos.md` |
 | 4c. Ventajas y limitaciones | Por modelo y en la comparación | `docs/` |
-| 5. Resultados | Comparación final y conclusiones | `docs/comparacion_modelos.md` |
+| 5. Resultados | Comparación final y conclusiones | Informe en `docs/` y `docs/comparacion_modelos.md` |
 
 ## Resultados
 
