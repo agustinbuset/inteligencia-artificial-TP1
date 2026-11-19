@@ -12,7 +12,7 @@ Docente: Parkinson, Christian
 
 ## El problema
 
-Dataset asignado: **Accidente** (2.974.335 accidentes viales, 49 atributos). Es un problema de **clasificación supervisada multiclase**: predecir la severidad del accidente (`Severity`, clases 1 a 4, donde 1 es la más leve). Hay que identificar el problema y las variables, preprocesar los datos, aplicar al menos tres modelos de Machine Learning (con técnica de selección de datos, evaluación y ventajas/limitaciones) y presentar los resultados (ver `consigna/`).
+Dataset asignado por número de grupo: **Accidente** (2.974.335 accidentes viales, 49 atributos). Es un problema de **clasificación supervisada multiclase**: predecir la severidad del accidente (`Severity`, clases 1 a 4, donde 1 es la más leve). Hay que identificar el problema y las variables, preprocesar los datos, aplicar al menos tres modelos de Machine Learning (con técnica de selección de datos, evaluación y ventajas/limitaciones) y presentar los resultados (ver `consigna/`).
 
 ## Requisitos
 
