@@ -1,4 +1,4 @@
-"""Prueba de integración pequeña de los tres entrenamientos y su comparación."""
+"""Prueba de integración pequeña de los cuatro entrenamientos y su comparación."""
 import json
 import subprocess
 import sys
@@ -32,6 +32,8 @@ def main():
              str(models / 'regresion_logistica')],
             ['scripts.entrenar_arboles', '--datos', str(data), '--salida', str(models),
              '--arboles', '3', '--trabajos', '1'],
+            ['scripts.entrenar_red_neuronal', '--datos', str(data), '--salida',
+             str(models / 'red_neuronal'), '--epocas', '20', '--trabajos', '1'],
             ['scripts.comparar_modelos', '--datos', str(data), '--modelos', str(models),
              '--salida', str(root / 'comparacion')],
         ]
@@ -41,7 +43,7 @@ def main():
             if result.returncode:
                 raise RuntimeError(result.stdout + result.stderr)
         summary = pd.read_csv(root / 'comparacion/comparacion_test.csv')
-        assert len(summary) == 3 and summary['modelo'].nunique() == 3
+        assert len(summary) == 4 and summary['modelo'].nunique() == 4
         assert summary[['accuracy', 'f1_macro', 'balanced_accuracy']].apply(
             lambda column: column.between(0, 1).all()).all()
         for method in summary['modelo']:
@@ -56,7 +58,7 @@ def main():
                                 cwd=PROYECTO, capture_output=True, text=True)
         if result.returncode:
             raise RuntimeError(result.stdout + result.stderr)
-        print('Integración correcta: tres métodos, evaluación final, métricas y protección de salidas.')
+        print('Integración correcta: cuatro métodos, evaluación final, métricas y protección de salidas.')
 
 
 if __name__ == '__main__':

@@ -12,13 +12,10 @@ no es necesario para el árbol, pero se conserva para comparar sobre las mismas
 entradas. Se convierte la matriz a float32, formato interno del árbol.
 No se vuelve a imputar, codificar ni dividir el dataset.
 
-El primer ajuste sin pesos utilizó CSC disperso. Para los pendientes se adoptó
-una representación densa de los mismos valores float32, tras medir 23,14 s
-en CSC frente a 4,66 s en denso sobre las primeras 100.000 filas, con los mismos
-parámetros y cantidad de hojas. La matriz densa de entrenamiento ocupa unos
-1,43 GB; se comprobó memoria disponible suficiente. Se conserva el árbol sin
-pesos ya ajustado y se registra la representación de cada ajuste. Los tiempos
-de las variantes no permiten aislar el efecto de los pesos, dado este cambio.
+Se usa una representación densa de los mismos valores float32: sobre las
+primeras 100.000 filas, el ajuste tardó 23,14 s en CSC disperso frente a 4,66 s
+en denso, con los mismos parámetros y cantidad de hojas. La matriz densa de
+entrenamiento ocupa unos 1,43 GB, por lo que se requiere memoria suficiente.
 
 Se comparan `class_weight=None` y `class_weight='balanced'`, con `criterion='gini'`,
 `max_depth=20`, `min_samples_leaf=5`, `max_features=None` y semilla 42.
@@ -30,8 +27,8 @@ Los árboles no tienen un proceso iterativo de convergencia como la regresión l
 
 ## Ejecutar y consultar resultados
 
-```powershell
-.\.venv\Scripts\python.exe -m scripts.entrenar_arboles --metodo arbol_decision
+```bash
+python -m scripts.entrenar_arboles --metodo arbol_decision
 ```
 
 Los resultados se guardan en `outputs/modelos/arbol_decision/`, con una carpeta
@@ -57,8 +54,8 @@ La evaluación final y sus limitaciones se documentan en
 
 | Variante | Accuracy | F1 macro | Balanced accuracy | F1 macro train | Ajuste |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Sin pesos | 79,32 % | 0,4935 | 0,4743 | 0,5293 | 976,7 s (CSC) |
-| Balanceada | 65,73 % | 0,4420 | 0,5887 | 0,4675 | 128,3 s (denso) |
+| Sin pesos | 79,31 % | 0,4934 | 0,4741 | 0,5293 | 36,8 s |
+| Balanceada | 65,72 % | 0,4419 | 0,5886 | 0,4675 | 36,9 s |
 
 Se selecciona **sin pesos** por mayor F1 macro de validación. El uso de pesos
 aumentó el recall promedio por clase, pero redujo F1 macro y accuracy. El F1

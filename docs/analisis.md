@@ -1,10 +1,9 @@
 # Análisis del TP 1 — Machine Learning
 
-> Actualización: el dataset real ya está en `../datasets/Accidente.csv` y se procesaron
-> sus 2.974.335 registros conservando el original intacto (SHA-256 verificado).
-> El informe ejecutado está en [resumen de preparación](../datasets/preparados/accidente/resumen.md).
-> Los apartados siguientes corresponden al análisis inicial de la documentación,
-> anterior a la incorporación de los registros reales.
+> Este documento responde los puntos 1 y 2 de la consigna a partir del diccionario de
+> variables de la cátedra. Los datos reales (2.974.335 registros) ya se verificaron y
+> procesaron: los faltantes, la distribución de `Severity` y el tratamiento de cada
+> variable están en el [reporte de preprocesamiento](reporte_preprocesamiento_punto_3.md).
 
 ## Fuentes y alcance
 
@@ -14,7 +13,7 @@
 
 El notebook y el HTML contienen la misma descripción del dataset **Accidente** y su diccionario de variables. Informan **2.974.335 eventos y 49 atributos**. Cada fila representa un accidente vial.
 
-Estos archivos no incluyen los registros del dataset ni un análisis ejecutado. Por lo tanto, el tamaño informado, los tipos efectivos de las columnas, los valores faltantes y la distribución de las clases aún no se verificaron sobre datos reales. Los tipos indicados a continuación son conceptuales o esperados según la documentación.
+Estos archivos describen el dataset pero no incluyen los registros. Por eso los tipos indicados en este documento son los conceptuales, según la documentación; la verificación sobre los datos reales (tipos efectivos, faltantes y distribución de clases) se hizo después y está en el [reporte de preprocesamiento](reporte_preprocesamiento_punto_3.md).
 
 ## 1. Identificar el tipo/clase de problema
 
@@ -117,6 +116,6 @@ Estos indicadores usan distintos criterios de iluminación y pueden estar relaci
 - **Definir cuándo se hará la predicción:** si se pretende estimar la severidad al inicio, `End_Time` y cualquier duración derivada no estarán disponibles. También se debe revisar la disponibilidad de `End_Lat`, `End_Lng` y `Distance(mi)`.
 - **Revisar posible fuga de información:** `Description` podría mencionar la gravedad o consecuencias del evento. Antes de usarla hay que comprobar que no revele la etiqueta ni incluya información posterior al momento de predicción.
 - **No confundir códigos con magnitudes:** `TMC`, `Zipcode` y `Number` no deben tratarse automáticamente como variables numéricas continuas por su apariencia o almacenamiento.
-- **Verificar los datos reales antes de decidir el preprocesamiento:** faltan comprobar tipos almacenados, valores únicos, faltantes, duplicados, rangos, frecuencias de `Severity` y posibles columnas constantes. No se puede afirmar todavía que haya desbalance de clases o un porcentaje determinado de valores faltantes.
+- **Verificar los datos reales antes de decidir el preprocesamiento:** al revisarlos se confirmó un **fuerte desbalance** de `Severity` en entrenamiento (clase 1: 0,03 %, clase 2: 67,02 %, clase 3: 29,84 %, clase 4: 3,10 %) y columnas con muchos faltantes, como `Precipitation(in)` (67,15 %) y `Wind_Chill(F)` (62,26 %). El detalle está en el [reporte de preprocesamiento](reporte_preprocesamiento_punto_3.md).
 
 El inventario contiene **49 variables: una objetivo y 48 columnas restantes**. Estas últimas no constituyen automáticamente 48 predictores válidos; su selección se resolverá al definir el escenario de predicción y revisar el dataset.

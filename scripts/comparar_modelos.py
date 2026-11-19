@@ -1,4 +1,4 @@
-"""Congela la selección por validación y evalúa los tres modelos en prueba."""
+"""Congela la selección por validación y evalúa los cuatro modelos en prueba."""
 import argparse
 import json
 from pathlib import Path
@@ -12,7 +12,9 @@ from sklearn.metrics import classification_report, confusion_matrix
 from scripts.evaluacion_modelos import comprobar_datos, evaluar, guardar_json
 from scripts.rutas import DATOS_PREPARADOS, PROYECTO
 
-METODOS = ['regresion_logistica', 'arbol_decision', 'random_forest']
+METODOS = ['regresion_logistica', 'arbol_decision', 'random_forest', 'red_neuronal']
+ETIQUETAS = {'regresion_logistica': 'Regresión logística', 'arbol_decision': 'Árbol de decisión',
+             'random_forest': 'Random Forest', 'red_neuronal': 'Red neuronal'}
 
 
 def main():
@@ -83,18 +85,18 @@ def main():
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots(figsize=(9, 4))
     positions = np.arange(len(result))
     ax.bar(positions - .18, [r['f1_macro_validation'] for r in result], .36, label='Validación')
     ax.bar(positions + .18, [r['f1_macro'] for r in result], .36, label='Prueba')
-    ax.set_xticks(positions, ['Regresión logística', 'Árbol de decisión', 'Random Forest'])
+    ax.set_xticks(positions, [ETIQUETAS[r['modelo']] for r in result])
     ax.set_ylabel('F1 macro')
     ax.set_ylim(0, 1)
     ax.legend()
     fig.tight_layout()
     fig.savefig(args.salida / 'comparacion_f1_macro.png', dpi=150)
     plt.close(fig)
-    lines = ['# Comparación de los tres clasificadores', '',
+    lines = ['# Comparación de los cuatro clasificadores', '',
         f'Ganador fijado por F1 macro de validación: **{winner}**.', '',
         '| Modelo | Variante | F1 macro validación | F1 macro prueba | Accuracy prueba | Balanced accuracy prueba |',
         '| --- | --- | ---: | ---: | ---: | ---: |']

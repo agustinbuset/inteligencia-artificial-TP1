@@ -33,8 +33,8 @@ La mayor complejidad y costo computacional deben valorarse junto con las métric
 
 ## Ejecutar y consultar resultados
 
-```powershell
-.\.venv\Scripts\python.exe -m scripts.entrenar_arboles --metodo random_forest
+```bash
+python -m scripts.entrenar_arboles --metodo random_forest
 ```
 
 Las salidas están en `outputs/modelos/random_forest/`: selección y comparación
@@ -54,8 +54,8 @@ La evaluación final se documenta en [comparacion_modelos.md](comparacion_modelo
 
 | Variante | Accuracy | F1 macro | Balanced accuracy | F1 macro train | Ajuste |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Sin pesos | 77,28 % | 0,4507 | 0,4207 | 0,4579 | 185,3 s |
-| Balanceada | 66,31 % | 0,4273 | 0,5680 | 0,4433 | 175,7 s |
+| Sin pesos | 77,29 % | 0,4503 | 0,4203 | 0,4576 | 45,3 s |
+| Balanceada | 66,57 % | 0,4285 | 0,5687 | 0,4490 | 42,1 s |
 
 Se selecciona **sin pesos** por F1 macro de validación. Aunque los pesos
 mejoraron el recall promedio por clase, redujeron F1 macro y accuracy.

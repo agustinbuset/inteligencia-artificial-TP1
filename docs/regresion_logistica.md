@@ -33,7 +33,7 @@ mismo peso a cada clase, algo relevante ante la escasez de severidad 1.
 
 Este experimento no consulta test. El modelo de referencia del preprocesamiento
 ya tiene una evaluación histórica en test; esos resultados no se utilizan aquí
-para seleccionar pesos. La evaluación posterior de los tres modelos se
+para seleccionar pesos. La evaluación posterior de los cuatro modelos se
 documenta en [comparacion_modelos.md](comparacion_modelos.md); la regresión
 logística seleccionada obtuvo 0,4120 de F1 macro y 74,06 % de accuracy en prueba.
 
@@ -41,8 +41,8 @@ logística seleccionada obtuvo 0,4120 de F1 macro y 74,06 % de accuracy en prueb
 
 Desde la raíz del proyecto:
 
-```powershell
-.\.venv\Scripts\python.exe -m scripts.entrenar_regresion_logistica
+```bash
+python -m scripts.entrenar_regresion_logistica
 ```
 
 La salida predeterminada es `outputs/modelos/regresion_logistica/`:
@@ -98,16 +98,16 @@ generalización a años futuros o regiones nuevas. Además, la preparación fue
 seleccionada previamente con un clasificador logístico de referencia; esa
 decisión debe reconocerse al comparar con modelos de árboles.
 
-## Resultados ejecutados (24 de octubre de 2026)
+## Resultados ejecutados
 
 Se entrenaron ambas variantes con todos los registros de entrenamiento y se
 evaluaron sobre los 446.150 registros de validación, sin usar test.
-Entorno: Python 3.12.14 y scikit-learn 1.7.2.
+Entorno: Python 3.14.0 y scikit-learn 1.7.2.
 
 | Variante | Accuracy | F1 macro | Balanced accuracy | Iteraciones | Tiempo de ajuste |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Sin pesos | 74,19 % | 0,4130 | 0,3877 | 258 | 344,8 s |
-| Balanceada | 44,61 % | 0,3438 | 0,6039 | 429 | 581,6 s |
+| Sin pesos | 74,18 % | 0,4123 | 0,3871 | 266 | 105,2 s |
+| Balanceada | 44,59 % | 0,3437 | 0,6039 | 470 | 191,9 s |
 
 Ambas convergieron. Se selecciona **sin pesos** por su mayor F1 macro.
 Los tiempos corresponden a esta máquina, con límite de cuatro hilos, y
@@ -116,9 +116,9 @@ excluyen carga de archivos y evaluación.
 | Severidad | Casos reales | Recall sin pesos | Recall balanceada | Precision balanceada |
 | --- | ---: | ---: | ---: | ---: |
 | 1 | 146 | 0,00 % | 55,48 % | 0,0755 % |
-| 2 | 299.011 | 87,35 % | 34,08 % | 88,04 % |
-| 3 | 133.143 | 50,67 % | 63,68 % | 55,89 % |
-| 4 | 13.850 | 17,06 % | 88,33 % | 17,12 % |
+| 2 | 299.011 | 87,36 % | 34,07 % | 88,04 % |
+| 3 | 133.143 | 50,63 % | 63,67 % | 55,89 % |
+| 4 | 13.850 | 16,87 % | 88,33 % | 17,11 % |
 
 La variante balanceada recupera más accidentes de severidad 1 y 4, pero
 introduce numerosos falsos positivos. Para la clase 1, solo alrededor del
