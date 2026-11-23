@@ -42,7 +42,7 @@ Este experimento no consulta test. El modelo de referencia del preprocesamiento
 ya tiene una evaluación histórica en test; esos resultados no se utilizan aquí
 para seleccionar pesos. La evaluación posterior de los cuatro modelos se
 documenta en [comparacion_modelos.md](comparacion_modelos.md); la regresión
-logística seleccionada obtuvo 0,4120 de F1 macro y 74,06 % de accuracy en prueba.
+logística seleccionada obtuvo 0,4117 de F1 macro y 74,07 % de accuracy en prueba.
 
 ## Ejecución y archivos
 

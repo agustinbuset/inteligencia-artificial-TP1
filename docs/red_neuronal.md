@@ -46,8 +46,10 @@ Dos arquitecturas fijadas antes de evaluar:
 
 Parámetros comunes: ReLU, Adam, lote de 1.024, `alpha=1e-4`, máximo de 100
 épocas, corte temprano con paciencia de 5 y semilla 42. `MLPClassifier` no
-admite `class_weight`, así que a diferencia de los otros modelos las variantes
-comparan arquitecturas y no ponderación de clases. La selección se hace por F1
+tiene el parámetro `class_weight`, así que a diferencia de los otros modelos las
+variantes comparan arquitecturas y no ponderación de clases. En scikit-learn 1.7
+`MLPClassifier.fit` sí acepta `sample_weight`, por lo que ponderar clases sería
+posible; esa opción no se probó. La selección se hace por F1
 macro de validación.
 
 ## Ejecutar y consultar resultados

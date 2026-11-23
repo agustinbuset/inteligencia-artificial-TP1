@@ -3,3 +3,6 @@ __pycache__/
 data/
 datasets/
 outputs/
+.idea/
+.tmp_doc_edit/
+consigna/Accidente.csv

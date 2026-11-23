@@ -33,6 +33,9 @@ python -m scripts.entrenar_regresion_logistica
 python -m scripts.entrenar_arboles
 python -m scripts.entrenar_red_neuronal
 python -m scripts.comparar_modelos
+
+# 3. Optimización de hiperparámetros (opcional, lleva horas y necesita ≥ 16 GB de RAM)
+python -m scripts.optimizar_modelos
 ```
 
 Los datos preparados se guardan en `datasets/preparados/accidente/` y los modelos y la comparación en `outputs/`. Para probar rápido con una muestra se puede agregar `--max-rows 20000` al paso 1. Para reanudar una preparación interrumpida, repetir el mismo comando con `--resume`.
@@ -46,6 +49,10 @@ Los datos preparados se guardan en `datasets/preparados/accidente/` y los modelo
 | `scripts/entrenar_arboles.py` | Árbol de decisión y Random Forest |
 | `scripts/entrenar_red_neuronal.py` | Red neuronal (perceptrón multicapa) entrenada con retro-propagación |
 | `scripts/comparar_modelos.py`, `evaluacion_modelos.py` | Selección y evaluación final de los cuatro modelos |
+| `scripts/optimizar_modelos.py` | Búsqueda de hiperparámetros de los cuatro modelos y poda del árbol |
+| `scripts/comparar_columnas_*.py`, `analizar_columnas_arbol.py` | Comparación con menos columnas y permutación (exploratorio) |
+| `scripts/detectar_clase_1.py` | Detector binario de severidad 1 (exploratorio, sin resultados documentados) |
+| `scripts/graficar_correlaciones.py` | Mapa de calor `docs/mapa_calor_correlaciones.png` |
 | `scripts/exportar_dataset_limpio.py`, `resumir_resultados.py` | Tabla limpia en CSV e informe de preparación |
 | `scripts/verificar_*.py` | Comprobaciones de los datos y de los flujos |
 | `preparar_datos.py` | Acceso de compatibilidad con los modelos guardados |
@@ -78,4 +85,15 @@ Datos preparados: 2.082.034 filas de entrenamiento, 446.150 de validación y 446
 | Red neuronal (128, 64) | 0,4797 | 77,92 % | 0,4805 |
 | Referencia: siempre severidad 2 | – | 67,02 % | 0,2006 |
 
-El ganador por F1 macro de validación fue el **árbol de decisión sin pesos**; la red neuronal quedó segunda. Ningún modelo seleccionado reconoció la severidad 1: las métricas por clase y las limitaciones están en `docs/comparacion_modelos.md`.
+En esta comparación inicial el ganador por F1 macro de validación fue el **árbol de decisión sin pesos**; la red neuronal quedó segunda. Ningún modelo seleccionado reconoció la severidad 1: las métricas por clase y las limitaciones están en `docs/comparacion_modelos.md`.
+
+### Tras optimizar hiperparámetros (`scripts/optimizar_modelos.py`)
+
+| Modelo | F1 macro validación | F1 macro prueba |
+|---|---|---|
+| Regresión logística (C = 10) | 0,4134 | 0,4125 |
+| Árbol de decisión (profundidad 24, mínimo 20 por hoja) | 0,5057 | 0,5069 |
+| **Random Forest (profundidad 28, bootstrap 50 %, 20 % de atributos)** | **0,5174** | **0,5197** |
+| Red neuronal (192, 96) | 0,4836 | 0,4828 |
+
+El ganador final por F1 macro de validación es **Random Forest**. La búsqueda usó una muestra de 250.000 filas de entrenamiento y la prueba ya se había consultado antes; la severidad 1 sigue sin reconocerse. Las cifras de esta segunda tabla provienen de una ejecución con Python 3.12.14 (ver `docs/comparacion_modelos.md`).
