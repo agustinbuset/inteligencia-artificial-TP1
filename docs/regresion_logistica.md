@@ -26,6 +26,13 @@ Ambas usan regularización L2, `C=1`, `solver='lbfgs'`, `max_iter=1000`,
 desbalance, no una búsqueda exhaustiva de hiperparámetros. Se registra la
 convergencia: un ajuste con aviso de falta de convergencia no se selecciona.
 
+La regularización L2 agrega a la función de pérdida una penalización
+proporcional a la suma de los cuadrados de los coeficientes. Así, los
+coeficientes de mayor magnitud reciben una penalización mayor, lo que ayuda a
+limitar el sobreajuste. `lbfgs` es el algoritmo de optimización que busca los
+coeficientes que minimizan esa pérdida. El desbalance entre severidades se
+aborda por separado mediante los pesos de clase en la variante balanceada.
+
 La selección usa el mayor F1 macro en validación. También se conservan
 accuracy, balanced accuracy (promedio del recall de las cuatro clases),
 F1 ponderado, métricas por clase y matriz de confusión. F1 macro otorga el
