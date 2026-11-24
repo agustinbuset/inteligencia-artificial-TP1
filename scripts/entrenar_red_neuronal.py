@@ -34,6 +34,7 @@ def main():
     parser.add_argument('--salida', type=Path, default=PROYECTO / 'outputs/modelos/red_neuronal')
     parser.add_argument('--epocas', type=int, default=100, help='Máximo de pasadas por training.')
     parser.add_argument('--trabajos', type=int, default=4)
+    parser.add_argument('--verbose', action='store_true', help='Muestra pérdida y accuracy interna por época.')
     args = parser.parse_args()
     if args.epocas < 1 or args.trabajos < 1:
         parser.error('--epocas y --trabajos deben ser positivos.')
@@ -57,7 +58,7 @@ def main():
                               alpha=1e-4, batch_size=1024, learning_rate_init=1e-3,
                               max_iter=args.epocas, early_stopping=True,
                               validation_fraction=0.1, n_iter_no_change=5, tol=1e-4,
-                              random_state=42)
+                              random_state=42, verbose=args.verbose)
         print(f'Entrenando red_neuronal/{variant} {layers}: {len(y):,} filas', flush=True)
         start = time.perf_counter()
         with threadpool_limits(limits=args.trabajos), warnings.catch_warnings(record=True) as caught:

@@ -192,6 +192,8 @@ def main():
     parser.add_argument('--folds', type=int, default=5)
     parser.add_argument('--max-rows', type=int, default=None,
                         help='Muestra aleatoria opcional DESPUÉS de cargar el CSV completo')
+    parser.add_argument('--min-rows-per-class', type=int, default=None,
+                        help='Reserva este mínimo por severidad antes de completar la muestra estratificada')
     parser.add_argument('--comparison-max-rows', type=int, default=None,
                         help='Limita SOLO la comparación/CV; ajuste final usa todo training')
     parser.add_argument('--batch-size', type=int, default=25000)
@@ -206,6 +208,9 @@ def main():
         parser.error('--folds debe ser >= 2 y --max-rows >= 40')
     if args.batch_size < 1 or (args.comparison_max_rows is not None and args.comparison_max_rows < 40):
         parser.error('--batch-size debe ser positivo y --comparison-max-rows >= 40')
+    minimum = args.min_rows_per_class
+    if minimum is not None and (minimum < 1 or args.max_rows is None or args.max_rows <= 4 * minimum):
+        parser.error('--min-rows-per-class debe ser positivo y requiere --max-rows mayor a cuatro veces el mínimo')
     args.output.mkdir(parents=True, exist_ok=args.resume)
     out = args.output
     copy = out / 'dataset_original_copia.csv'
@@ -234,7 +239,23 @@ def main():
     invalid_labels = int((~valid).sum())
     frame = frame.loc[valid].copy()
     frame['Severity'] = labels.loc[valid].astype(int)
-    if args.max_rows and args.max_rows < len(frame):
+    if minimum is not None:
+        counts = frame['Severity'].value_counts().reindex([1, 2, 3, 4], fill_value=0)
+        if (counts < minimum).any():
+            raise ValueError(f'No hay {minimum} filas disponibles por severidad: {counts.to_dict()}')
+    if args.max_rows and args.max_rows < len(frame) and minimum is not None:
+        severity = frame['Severity']
+        reserved = severity.groupby(severity).sample(n=minimum, random_state=args.seed)
+        remaining = severity.drop(index=reserved.index)
+        size = args.max_rows - len(reserved)
+        counts_remaining = remaining.value_counts()
+        if counts_remaining.min() >= 2 and min(size, len(remaining) - size) >= len(counts_remaining):
+            sample, _ = train_test_split(remaining.index, train_size=size,
+                                         stratify=remaining, random_state=args.seed)
+        else:
+            sample = remaining.sample(n=size, random_state=args.seed).index
+        frame = frame.loc[reserved.index.append(sample)]
+    elif args.max_rows and args.max_rows < len(frame):
         frame, _ = train_test_split(frame, train_size=args.max_rows,
                                     stratify=frame['Severity'], random_state=args.seed)
     train, reserve = train_test_split(frame, test_size=.30, stratify=frame['Severity'],
@@ -373,6 +394,7 @@ def main():
                 'filas_originales': initial, 'duplicados_eliminados': duplicates,
                 'objetivos_invalidos_eliminados': invalid_labels, 'mejor_variante': best,
                 'seed': args.seed, 'folds': args.folds,
+                'limite_muestra': args.max_rows, 'minimo_por_clase_muestra': minimum,
                 'filas': {'train': len(train), 'validation': len(validation), 'test': len(test)},
                 'filas_comparacion_training': len(y_comparison),
                 'limite_comparacion': args.comparison_max_rows,
