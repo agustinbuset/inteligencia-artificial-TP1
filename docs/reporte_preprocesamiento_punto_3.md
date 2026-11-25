@@ -419,10 +419,13 @@ esos objetivos habría que usar separaciones específicas.
 
 ## 8. Explicación de los gráficos generados
 
-Hay **dos imágenes generadas**, ambas correspondientes al entrenamiento:
-distribución de severidad e histogramas de atributos numéricos. No se generaron
-gráficos de datos antes/después, un mapa de calor de correlaciones ni un gráfico
-de componentes principales. Para esos otros análisis se guardaron tablas.
+Hay **tres imágenes generadas**, todas correspondientes al entrenamiento:
+distribución de severidad, histogramas de atributos numéricos y el mapa de calor
+de correlaciones de las 12 variables numéricas
+([mapa_calor_correlaciones.png](mapa_calor_correlaciones.png), generado con
+`scripts/graficar_correlaciones.py`). No se generaron gráficos de datos
+antes/después ni un gráfico de componentes principales. Para esos otros análisis
+se guardaron tablas.
 
 ### 8.1. Barras de severidad: `clases_train.png`
 
@@ -477,7 +480,7 @@ disponibles, no todas las filas de entrenamiento.
 
 ### 8.3. Qué aportó la tabla de correlaciones
 
-Aunque no se generó una imagen de correlaciones, se guardó
+Además del mapa de calor (`docs/mapa_calor_correlaciones.png`), se guardó
 [correlaciones_train.csv](../datasets/preparados/accidente/correlaciones_train.csv).
 La correlación lineal entre temperatura y sensación térmica fue aproximadamente
 **0,9949**, lo que muestra una asociación muy fuerte en los registros con ambas
@@ -502,7 +505,7 @@ Hay que diferenciar **no implementada** de **implementada pero no elegida**.
 | Regularización L1 para selección | Implementada y evaluada, no elegida para el modelo final. | Llegó al límite de iteraciones sin converger; sus 97 atributos seleccionados son un resultado exploratorio. |
 | Regularización L2 | Aplicada en el clasificador final. | Controla la magnitud de los coeficientes; no equivale a balancear clases ni a borrar columnas. |
 | Remuestreo para balancear clases | **No implementado.** | El flujo conservó las proporciones originales y se centró en comparar preparaciones. Es una limitación, no evidencia de que el balanceo sea innecesario. |
-| Pesos de clase balanceados | **No utilizados.** | No se incorporó esa estrategia en el modelo de referencia. El desbalance sigue siendo un problema pendiente. |
+| Pesos de clase balanceados | **No utilizados en el preprocesamiento ni en el modelo de referencia.** | Sí se probaron después, como variante `balanceada` de logística, árbol y bosque (ver `comparacion_modelos.md`): subieron el recall promedio pero bajaron el F1 macro y no se eligieron. El desbalance sigue siendo una limitación. |
 | Eliminación automática por alta correlación | No implementada como filtro adicional. | Se examinó correlación y se compararon PCA y L1, pero no se fijó un umbral para borrar variables relacionadas. |
 
 **Tomar una muestra estratificada de 20.000 registros para comparar no es

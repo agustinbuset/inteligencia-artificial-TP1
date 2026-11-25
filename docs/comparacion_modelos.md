@@ -12,7 +12,7 @@ de entrenamiento, 446.150 de validación y 446.151 de prueba. No se emplean como
 entradas los identificadores, las etiquetas ni el indicador de conjunto.
 Cada método compara dos variantes elegidas por F1 macro de validación: sin pesos
 y con pesos balanceados en los tres primeros, y dos arquitecturas en la red
-neuronal (que no admite pesos por clase). Después se fija el ganador entre métodos con ese
+neuronal (que no tiene `class_weight`; `fit` acepta `sample_weight`, no probado). Después se fija el ganador entre métodos con ese
 mismo criterio, antes de leer prueba. No se reentrena con validación ni se
 cambian parámetros a partir de prueba.
 
@@ -63,7 +63,8 @@ con una referencia logística. Además, el proyecto ya tenía métricas históri
 de prueba durante el preprocesamiento: prueba no es un conjunto nunca observado
 en todo el proyecto, aunque esta selección no utiliza esos resultados.
 
-Los parámetros de cada familia no se optimizan exhaustivamente. El bosque usa
+En esta comparación inicial los parámetros de cada familia no se optimizan
+exhaustivamente; la optimización posterior se describe al final. El bosque usa
 bootstrap del 25 % por árbol y todos los modelos comparten las mismas entradas;
 la comparación describe estas configuraciones concretas. Los tiempos dependen
 de la máquina y no constituyen un benchmark bajo condiciones idénticas de carga.
@@ -75,7 +76,8 @@ regresión logística, dispersas. La representación se registra por ajuste.
 Entorno: Python 3.14.0 y scikit-learn 1.7.2. Las variantes seleccionadas fueron
 **sin pesos** en los tres primeros métodos y **dos capas** en la red neuronal.
 El ganador se fijó con validación antes de
-consultar prueba: **árbol de decisión**.
+consultar prueba: **árbol de decisión** (comparación inicial; tras la
+optimización de hiperparámetros el primero pasa a ser Random Forest, ver abajo).
 
 | Modelo | F1 macro validación | Accuracy prueba | F1 macro prueba | Balanced accuracy prueba |
 | --- | ---: | ---: | ---: | ---: |
@@ -124,3 +126,35 @@ La tabla con valores completos está en
 `outputs/comparacion_modelos/comparacion_test.csv`. El gráfico y el resumen
 local están en esa misma carpeta; los informes por método explican parámetros,
 tratamiento del desbalance y archivos de salida.
+
+## Optimización de hiperparámetros (`scripts/optimizar_modelos.py`)
+
+Se conservaron las 172 columnas y las particiones. Cada familia se exploró con
+una grilla sobre una muestra fija de 250.000 filas de entrenamiento, puntuando
+con las 446.150 filas de validación; la mejor configuración se reentrenó con todo
+el entrenamiento y la elección final se fijó por F1 macro de validación antes de
+calcular prueba. Para el árbol se añadieron dos variantes podadas por
+costo-complejidad (`ccp_alpha` fijo en el script). La prueba ya se había consultado
+en etapas anteriores del proyecto.
+
+| Modelo | Configuración elegida | F1 macro validación (inicial → final) | F1 macro prueba (inicial → final) |
+| --- | --- | ---: | ---: |
+| Regresión logística | C = 10 | 0,4130 → 0,4134 | 0,4120 → 0,4125 |
+| Árbol de decisión | profundidad 24, mínimo 20 por hoja | 0,4935 → 0,5057 | 0,4942 → 0,5069 |
+| **Random Forest** | profundidad 28, bootstrap 50 %, 20 % de atributos, 100 árboles | 0,4507 → **0,5174** | 0,4515 → **0,5197** |
+| Red neuronal | capas (192, 96), alpha 1e-4 | 0,4724 → 0,4836 | 0,4726 → 0,4828 |
+
+Procedencia de las cifras: provienen de la reevaluación de los modelos guardados
+y de la optimización en la máquina de Agustín (Python 3.12.14, scikit-learn 1.7.2).
+Por eso las referencias «iniciales» difieren en el cuarto decimal de la tabla de
+la sección anterior (corrida con Python 3.14.0). Los valores definitivos están en
+`outputs/optimizacion_modelos/comparacion_test.csv`.
+
+**Ganador final: Random Forest.** Superó al árbol optimizado en 0,0117 de F1 macro
+de validación y también quedó primero en prueba. Una explicación posible, no
+comprobada con un experimento específico, es que cada árbol pasó a ver más datos
+(50 % en lugar de 25 %), más atributos por división y mayor profundidad, de modo
+que cada árbol es más fuerte y el promedio de 100 árboles reduce la variabilidad.
+Las cuatro configuraciones finales siguen sin reconocer la severidad 1.
+Con 51 columnas (permutación, exploratorio y sin evaluar en prueba) el árbol
+igualó el F1 macro de validación del de 172 columnas (0,4937 contra 0,4935).

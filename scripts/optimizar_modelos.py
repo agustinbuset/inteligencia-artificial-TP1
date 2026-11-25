@@ -131,6 +131,9 @@ def main():
                                           args.trabajos),
         }
         if familia == 'arbol_decision':
+            # Valores de ccp_alpha fijos (no se recalculan aquí). TODO: documentar su
+            # origen (trayectoria de poda del árbol de referencia). `_prune_tree` es un
+            # método interno de scikit-learn 1.7.x y puede cambiar en otras versiones.
             for etiqueta, alpha in [('poda_mejor_f1', 1.4660229824342447e-06),
                                     ('poda_simple', 3.1901475622532575e-06)]:
                 podado = copy(modelo)
